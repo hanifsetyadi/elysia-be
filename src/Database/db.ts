@@ -10,7 +10,7 @@ export class userDB {
     private db: Database;
 
     constructor() {
-        this.db = new Database('users.db');
+        this.db = new Database('users.sqlite');
 
         this.init()
             .then(() => {
@@ -23,7 +23,11 @@ export class userDB {
     }
 
     async getUserWithID(id: number){
-        return this.db.query(`SELECT * from users WHERE id = ${id}`).all()
+        return this.db.query(`SELECT * from users WHERE id = ${id}`).get()
+    }
+
+    async searchUserByMail(email: string){
+        return this.db.query(`SELECT * from users WHERE email = ?`).get(email)
     }
 
     async addUser(user: User){
@@ -39,7 +43,7 @@ export class userDB {
     }
 
     async init(){
-        return this.db.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(55), email VARCHAR(55))')
+        return this.db.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(55) UNIQUE, email VARCHAR(55) UNIQUE)')
     }
     
 }
